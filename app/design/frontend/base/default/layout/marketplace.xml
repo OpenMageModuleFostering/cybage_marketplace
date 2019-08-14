@@ -88,12 +88,12 @@
             <action method="addItem">
                 <type>js</type>
                 <name>tiny_mce/tiny_mce.js</name>
-            </action>            
+            </action>
             <action method="setTitle" translate="title" module="marketplace">
                 <title>Marketplace Product Add</title>
             </action>
         </reference>
-        
+
         <update handle="customer_account"/>
         <reference name="content">
             <!--<remove name="viewed_product" /> -->
@@ -145,7 +145,7 @@
             <action method="addItem">
                 <type>js</type>
                 <name>tiny_mce/tiny_mce.js</name>
-            </action>            
+            </action>
             <action method="setTitle" translate="title" module="marketplace">
                 <title>Marketplace Product Edit</title>
             </action>
@@ -198,22 +198,34 @@
             </block>
         </reference>
     </marketplace_account_vieworder>
-    
+
     <marketplace_order_printorder>
         <reference name="root">
-            <action method="setTemplate"><template>page/empty.phtml</template></action>
+            <action method="setTemplate">
+                <template>page/empty.phtml</template>
+            </action>
         </reference>
         <reference name="content">
             <block type="marketplace/myorders_view" name="marketplace.myordersprint" template="marketplace/customer/account/print.phtml">
-                <action method="addItemRender"><type>default</type><block>sales/order_item_renderer_default</block><template>sales/order/items/renderer/default.phtml</template></action>
-                <action method="addItemRender"><type>grouped</type><block>sales/order_item_renderer_grouped</block><template>sales/order/items/renderer/default.phtml</template></action>
+                <action method="addItemRender">
+                    <type>default</type>
+                    <block>sales/order_item_renderer_default</block>
+                    <template>sales/order/items/renderer/default.phtml</template>
+                </action>
+                <action method="addItemRender">
+                    <type>grouped</type>
+                    <block>sales/order_item_renderer_grouped</block>
+                    <template>sales/order/items/renderer/default.phtml</template>
+                </action>
             </block>
         </reference>
     </marketplace_order_printorder>
-    
+
     <customer_account translate="label">
         <reference name="customer_account_navigation">
-            <action method="setTemplate"><template>marketplace/customer/account/navigation.phtml</template></action>
+            <action method="setTemplate">
+                <template>marketplace/customer/account/navigation.phtml</template>
+            </action>
             <action method="addLink" translate="label" module="customer">
                 <name>marketplace</name>
                 <path>marketplace/dashboard</path>
@@ -228,7 +240,7 @@
                 <name>marketplace_product</name>
                 <path>marketplace/product</path>
                 <label>Marketplace Product</label>
-            </action>    
+            </action>
             <action method="addLink" translate="label" module="customer">
                 <name>marketplace_product_add</name>
                 <path>marketplace/product/add</path>
@@ -248,26 +260,31 @@
     </customer_account>
 
     <catalog_product_view>
-        <reference name="head">            
+        <reference name="head">
             <action method="addItem">
                 <type>skin_css</type>
                 <name>css/marketplace/jquery.fancybox-1.3.4.css</name>
+                <condition>if_magento_lt1dot9</condition>
             </action>
             <action method="addItem">
                 <type>js</type>
                 <name>marketplace/fancybox/jquery-1.7.2.min.js</name>
+                <condition>if_magento_lt1dot9</condition>
             </action>
             <action method="addItem">
                 <type>js</type>
                 <name>marketplace/fancybox/jquery.noconflict.js</name>
+                <condition>if_magento_lt1dot9</condition>
             </action>
             <action method="addItem">
                 <type>js</type>
                 <name>marketplace/fancybox/jquery.mousewheel-3.0.4.pack.js</name>
-            </action>            
+                <condition>if_magento_lt1dot9</condition>
+            </action>
             <action method="addItem">
                 <type>js</type>
                 <name>marketplace/fancybox/jquery.fancybox-1.3.4.pack.js</name>
+                <condition>if_magento_lt1dot9</condition>
             </action>
         </reference>
         <reference name="product.info">
@@ -282,7 +299,7 @@
     <marketplace_productquestion_link>
         <reference name="root">
             <action method="setTemplate">
-                <template>page/popup.phtml</template>
+                <template>marketplace/page/blank.phtml</template>
             </action>
         </reference>
         <reference name="head">
@@ -290,12 +307,12 @@
                 <type>skin_css</type>
                 <name>css/marketplace/styles.css</name>
             </action>
-        </reference>    
-        <reference name="content">     
+        </reference>
+        <reference name="content">
             <block type="core/template" name="product.ask.form" template="marketplace/catalog/product/askquestion/form.phtml">
                 <block type="core/messages" name="global_messages" as="global_messages"/>
             </block>
-        </reference> 
+        </reference>
     </marketplace_productquestion_link>
 
     <marketplace_order_history translate="label">
@@ -354,9 +371,9 @@
                 <template>page/2columns-left.phtml</template>
             </action>
         </reference>
-        
+
         <update handle="customer_account"/>
-        
+
         <reference name="content">
             <block type="marketplace/product_askquestion_replyform" name="marketplace.product.askquestion.reply.form" as="product_askquestion_replyform" template="marketplace/catalog/product/askquestion/reply_form.phtml"/>
         </reference>
@@ -365,7 +382,9 @@
     <!-- //Layout node for sellerinfo page -->
     <marketplace_seller_sellerinfo translate="label">
         <reference name="root">
-            <action method="setTemplate"><template>page/2columns-left.phtml</template></action>
+            <action method="setTemplate">
+                <template>page/2columns-left.phtml</template>
+            </action>
         </reference>
         <reference name="head">
             <action method="addItem">
@@ -387,7 +406,9 @@
 
     <marketplace_seller_rating translate="label">
         <reference name="root">
-            <action method="setTemplate"><template>page/2columns-left.phtml</template></action>
+            <action method="setTemplate">
+                <template>page/2columns-left.phtml</template>
+            </action>
         </reference>
         <reference name="head">
             <action method="addItem">
@@ -399,34 +420,36 @@
             </action>
         </reference>
         <reference name="content">
-            <block type="marketplace/review_product_view" name="seller_rating" template="marketplace/review/product/view/list.phtml">                
+            <block type="marketplace/review_product_view" name="seller_rating" template="marketplace/review/product/view/list.phtml">
             </block>
             <block type="core/template" name="product_review" as="product_review" template="marketplace/seller/seller_ratings.phtml" />
         </reference>
     </marketplace_seller_rating>
 
-    <customer_account_edit translate="label">        
-        <reference name="head">    
-        <action method="addItem">
+    <customer_account_edit translate="label">
+        <reference name="head">
+            <action method="addItem">
                 <type>js</type>
                 <name>marketplace/nicEdit-latest.js</name>
-        </action>
+            </action>
         </reference>
-    <reference name="my.account.wrapper">
+        <reference name="my.account.wrapper">
             <block type="customer/form_edit" name="customer_edit" template="marketplace/customer/form/edit.phtml"/>
-        </reference>       
+        </reference>
     </customer_account_edit>
 
     <customer_account_create>
         <reference name="customer_form_register">
-            <action method="setTemplate"><template>marketplace/persistent/customer/form/register.phtml</template></action>
+            <action method="setTemplate">
+                <template>marketplace/persistent/customer/form/register.phtml</template>
+            </action>
             <block type="persistent/form_remember" name="persistent.remember.me" template="persistent/remember_me.phtml" />
             <block type="core/template" name="persistent.remember.me.tooltip" template="persistent/remember_me_tooltip.phtml" />
         </reference>
     </customer_account_create>
 
     <sales_order_view translate="label">
-        <reference name="head">            
+        <reference name="head">
             <action method="addItem">
                 <type>skin_css</type>
                 <name>css/marketplace/jquery.fancybox-1.3.4.css</name>
@@ -442,12 +465,12 @@
             <action method="addItem">
                 <type>js</type>
                 <name>marketplace/fancybox/jquery.mousewheel-3.0.4.pack.js</name>
-            </action>            
+            </action>
             <action method="addItem">
                 <type>js</type>
                 <name>marketplace/fancybox/jquery.fancybox-1.3.4.pack.js</name>
-            </action>    
-      <!--     <action method="addItem">
+            </action>
+            <!--     <action method="addItem">
                 <type>skin_css</type>
                 <name>css/marketplace/styles.css</name>
             </action> -->
@@ -455,8 +478,16 @@
         <reference name="my.account.wrapper">
             <block type="sales/order_view" name="sales.order.view">
                 <block type="sales/order_items" name="order_items" template="marketplace/sales/order/items.phtml">
-                    <action method="addItemRender"><type>default</type><block>sales/order_item_renderer_default</block><template>marketplace/sales/order/items/renderer/default.phtml</template></action>
-                    <action method="addItemRender"><type>grouped</type><block>sales/order_item_renderer_grouped</block><template>marketplace/sales/order/items/renderer/default.phtml</template></action>
+                    <action method="addItemRender">
+                        <type>default</type>
+                        <block>sales/order_item_renderer_default</block>
+                        <template>marketplace/sales/order/items/renderer/default.phtml</template>
+                    </action>
+                    <action method="addItemRender">
+                        <type>grouped</type>
+                        <block>sales/order_item_renderer_grouped</block>
+                        <template>marketplace/sales/order/items/renderer/default.phtml</template>
+                    </action>
                 </block>
             </block>
         </reference>
@@ -473,12 +504,12 @@
                 <type>skin_css</type>
                 <name>css/marketplace/styles.css</name>
             </action>
-        </reference>              
-         <reference name="content">     
+        </reference>
+        <reference name="content">
             <block type="core/template" name="product.ask.form" template="marketplace/sales/order/form.phtml">
                 <block type="core/messages" name="global_messages" as="global_messages"/>
             </block>
-         </reference>
+        </reference>
     </marketplace_buyerseller_comment>
 
     <marketplace_buyerseller_reply>
@@ -487,12 +518,12 @@
                 <template>page/2columns-left.phtml</template>
             </action>
         </reference>
-         <update handle="customer_account"/>
-         <reference name="content">     
+        <update handle="customer_account"/>
+        <reference name="content">
             <block type="marketplace/buyerseller" name="marketplace.buyerseller" template="marketplace/buyerseller/reply.phtml">
                 <block type="core/messages" name="global_messages" as="global_messages"/>
             </block>
-         </reference>
+        </reference>
     </marketplace_buyerseller_reply>
 
     <marketplace_buyerseller_notification>
@@ -501,10 +532,10 @@
                 <template>page/2columns-left.phtml</template>
             </action>
         </reference>
-          <update handle="customer_account"/>
-               <reference name="content">     
+        <update handle="customer_account"/>
+        <reference name="content">
             <block type="marketplace/buyerseller" name="marketplace.buyerseller" template="marketplace/buyerseller/notify.phtml"> </block>
-         </reference>
+        </reference>
     </marketplace_buyerseller_notification>
 
     <sales_order_history translate="label">
@@ -528,7 +559,7 @@
         <update handle="customer_account"/>
         <reference name="content">
             <block type="marketplace/myorders" name="marketplace.myorders" template="marketplace/customer/account/shiporder.phtml">
-                    <block type="marketplace/myorders_view" name="marketplace.items" as="items" template="marketplace/customer/account/myorders/shipitems.phtml">
+                <block type="marketplace/myorders_view" name="marketplace.items" as="items" template="marketplace/customer/account/myorders/shipitems.phtml">
                     <action method="addItemRender">
                         <type>default</type>
                         <block>sales/order_item_renderer_default</block>
@@ -550,38 +581,98 @@
 
     <checkout_cart_index translate="label">
         <reference name="checkout.cart">
-            <action method="addItemRender"><type>simple</type><block>checkout/cart_item_renderer</block><template>marketplace/checkout/cart/item/default.phtml</template></action>
-            <action method="addItemRender"><type>grouped</type><block>checkout/cart_item_renderer_grouped</block><template>marketplace/checkout/cart/item/default.phtml</template></action>
-            <action method="addItemRender"><type>configurable</type><block>checkout/cart_item_renderer_configurable</block><template>marketplace/checkout/cart/item/default.phtml</template></action>
+            <action method="addItemRender">
+                <type>simple</type>
+                <block>checkout/cart_item_renderer</block>
+                <template>marketplace/checkout/cart/item/default.phtml</template>
+            </action>
+            <action method="addItemRender">
+                <type>grouped</type>
+                <block>checkout/cart_item_renderer_grouped</block>
+                <template>marketplace/checkout/cart/item/default.phtml</template>
+            </action>
+            <action method="addItemRender">
+                <type>configurable</type>
+                <block>checkout/cart_item_renderer_configurable</block>
+                <template>marketplace/checkout/cart/item/default.phtml</template>
+            </action>
         </reference>
     </checkout_cart_index>
 
     <checkout_multishipping_addresses translate="label">
         <reference name="checkout_addresses">
-            <action method="addItemRender"><type>default</type><block>checkout/cart_item_renderer</block><template>marketplace/checkout/multishipping/item/default.phtml</template></action>
-            <action method="addItemRender"><type>grouped</type><block>checkout/cart_item_renderer_grouped</block><template>marketplace/checkout/multishipping/item/default.phtml</template></action>
-            <action method="addItemRender"><type>configurable</type><block>checkout/cart_item_renderer_configurable</block><template>marketplace/checkout/multishipping/item/default.phtml</template></action>
+            <action method="addItemRender">
+                <type>default</type>
+                <block>checkout/cart_item_renderer</block>
+                <template>marketplace/checkout/multishipping/item/default.phtml</template>
+            </action>
+            <action method="addItemRender">
+                <type>grouped</type>
+                <block>checkout/cart_item_renderer_grouped</block>
+                <template>marketplace/checkout/multishipping/item/default.phtml</template>
+            </action>
+            <action method="addItemRender">
+                <type>configurable</type>
+                <block>checkout/cart_item_renderer_configurable</block>
+                <template>marketplace/checkout/multishipping/item/default.phtml</template>
+            </action>
         </reference>
     </checkout_multishipping_addresses>
 
     <checkout_multishipping_shipping translate="label">
         <reference name="checkout_shipping">
-            <action method="addItemRender"><type>default</type><block>checkout/cart_item_renderer</block><template>marketplace/checkout/multishipping/item/default.phtml</template></action>
-            <action method="addItemRender"><type>grouped</type><block>checkout/cart_item_renderer_grouped</block><template>marketplace/checkout/multishipping/item/default.phtml</template></action>
-            <action method="addItemRender"><type>configurable</type><block>checkout/cart_item_renderer_configurable</block><template>marketplace/checkout/multishipping/item/default.phtml</template></action>
+            <action method="addItemRender">
+                <type>default</type>
+                <block>checkout/cart_item_renderer</block>
+                <template>marketplace/checkout/multishipping/item/default.phtml</template>
+            </action>
+            <action method="addItemRender">
+                <type>grouped</type>
+                <block>checkout/cart_item_renderer_grouped</block>
+                <template>marketplace/checkout/multishipping/item/default.phtml</template>
+            </action>
+            <action method="addItemRender">
+                <type>configurable</type>
+                <block>checkout/cart_item_renderer_configurable</block>
+                <template>marketplace/checkout/multishipping/item/default.phtml</template>
+            </action>
         </reference>
         <reference name="checkout_billing_items">
-            <action method="addItemRender"><type>default</type><block>checkout/cart_item_renderer</block><template>marketplace/checkout/multishipping/item/default.phtml</template></action>
-            <action method="addItemRender"><type>grouped</type><block>checkout/cart_item_renderer_grouped</block><template>marketplace/checkout/multishipping/item/default.phtml</template></action>
-            <action method="addItemRender"><type>configurable</type><block>checkout/cart_item_renderer_configurable</block><template>marketplace/checkout/multishipping/item/default.phtml</template></action>
+            <action method="addItemRender">
+                <type>default</type>
+                <block>checkout/cart_item_renderer</block>
+                <template>marketplace/checkout/multishipping/item/default.phtml</template>
+            </action>
+            <action method="addItemRender">
+                <type>grouped</type>
+                <block>checkout/cart_item_renderer_grouped</block>
+                <template>marketplace/checkout/multishipping/item/default.phtml</template>
+            </action>
+            <action method="addItemRender">
+                <type>configurable</type>
+                <block>checkout/cart_item_renderer_configurable</block>
+                <template>marketplace/checkout/multishipping/item/default.phtml</template>
+            </action>
         </reference>
     </checkout_multishipping_shipping>
 
     <checkout_onepage_review translate="label">
         <block type="checkout/onepage_review_info" name="root" output="toHtml" template="checkout/onepage/review/info.phtml">
-            <action method="addItemRender"><type>default</type><block>checkout/cart_item_renderer</block><template>marketplace/checkout/onepage/review/item.phtml</template></action>
-            <action method="addItemRender"><type>grouped</type><block>checkout/cart_item_renderer_grouped</block><template>marketplace/checkout/onepage/review/item.phtml</template></action>
-            <action method="addItemRender"><type>configurable</type><block>checkout/cart_item_renderer_configurable</block><template>marketplace/checkout/onepage/review/item.phtml</template></action>
+            <action method="addItemRender">
+                <type>default</type>
+                <block>checkout/cart_item_renderer</block>
+                <template>marketplace/checkout/onepage/review/item.phtml</template>
+            </action>
+            <action method="addItemRender">
+                <type>grouped</type>
+                <block>checkout/cart_item_renderer_grouped</block>
+                <template>marketplace/checkout/onepage/review/item.phtml</template>
+            </action>
+            <action method="addItemRender">
+                <type>configurable</type>
+                <block>checkout/cart_item_renderer_configurable</block>
+                <template>marketplace/checkout/onepage/review/item.phtml</template>
+            </action>
             <block type="checkout/cart_totals" name="checkout.onepage.review.info.totals" as="totals" template="checkout/onepage/review/totals.phtml"/>
             <block type="core/text_list" name="checkout.onepage.review.info.items.before" as="items_before" translate="label">
                 <label>Items Before</label>

@@ -35,43 +35,6 @@ class Cybage_Marketplace_Model_Customer extends Mage_Customer_Model_Customer
         }
         // end of custom validation for seller profile
 
-        if (!Zend_Validate::is( trim($customer->getFirstname()) , 'NotEmpty')) {
-            $errors[] = Mage::helper('customer')->__('The first name cannot be empty.');
-        }
-
-        if (!Zend_Validate::is( trim($customer->getLastname()) , 'NotEmpty')) {
-            $errors[] = Mage::helper('customer')->__('The last name cannot be empty.');
-        }
-
-        if (!Zend_Validate::is($customer->getEmail(), 'EmailAddress')) {
-            $errors[] = Mage::helper('customer')->__('Invalid email address "%s".', $customer->getEmail());
-        }
-
-        $password = $customer->getPassword();
-        if (!$customer->getId() && !Zend_Validate::is($password , 'NotEmpty')) {
-            $errors[] = Mage::helper('customer')->__('The password cannot be empty.');
-        }
-        if (strlen($password) && !Zend_Validate::is($password, 'StringLength', array(6))) {
-            $errors[] = Mage::helper('customer')->__('The minimum password length is %s', 6);
-        }
-        $confirmation = $customer->getConfirmation();
-        if ($password != $confirmation) {
-            $errors[] = Mage::helper('customer')->__('Please make sure your passwords match.');
-        }
-
-        $entityType = Mage::getSingleton('eav/config')->getEntityType('customer');
-        $attribute = Mage::getModel('customer/attribute')->loadByCode($entityType, 'dob');
-        if ($attribute->getIsRequired() && '' == trim($customer->getDob())) {
-            $errors[] = Mage::helper('customer')->__('The Date of Birth is required.');
-        }
-        $attribute = Mage::getModel('customer/attribute')->loadByCode($entityType, 'taxvat');
-        if ($attribute->getIsRequired() && '' == trim($customer->getTaxvat())) {
-            $errors[] = Mage::helper('customer')->__('The TAX/VAT number is required.');
-        }
-        $attribute = Mage::getModel('customer/attribute')->loadByCode($entityType, 'gender');
-        if ($attribute->getIsRequired() && '' == trim($customer->getGender())) {
-            $errors[] = Mage::helper('customer')->__('Gender is required.');
-        }
         if (empty($errors)) {
             return true;
         }
@@ -92,7 +55,9 @@ class Cybage_Marketplace_Model_Customer extends Mage_Customer_Model_Customer
         if(Mage::app()->getRequest()->getParam('check_seller_form'))
         {            
             $types = array(
-                'registered'   => self::XML_PATH_REGISTER_SELLER_EMAIL_TEMPLATE, // welcome email, when confirmation is disabled                
+                'registered'   => self::XML_PATH_REGISTER_SELLER_EMAIL_TEMPLATE, // welcome email, when confirmation is disabled
+                'confirmed'    => self::XML_PATH_CONFIRMED_EMAIL_TEMPLATE, // welcome email, when confirmation is enabled
+                'confirmation' => self::XML_PATH_CONFIRM_EMAIL_TEMPLATE, // email with confirmation link
             );
         
          

@@ -25,132 +25,63 @@ class Cybage_Marketplace_AccountController extends Mage_Customer_AccountControll
      * Create customer account action
      */
     public function createPostAction()
-    {     
-        
+    {
         $session = $this->_getSession();
         if ($session->isLoggedIn()) {
             $this->_redirect('*/*/');
             return;
         }
-        
+
         $isMarketplaceEnabled = Mage::Helper("marketplace")->isMarketplaceEnabled();
-        if($isMarketplaceEnabled == false)
-        {
-          return parent::createPostAction();
+        if($isMarketplaceEnabled == false) {
+            return parent::createPostAction();
         }
 
         $session->setEscapeMessages(true); // prevent XSS injection in user input
-        if ($this->getRequest()->isPost()) {
-            $errors = array();
+        if (!$this->getRequest()->isPost()) {
+            $errUrl = $this->_getUrl('*/*/create', array('_secure' => true));
+            $this->_redirectError($errUrl);
+            return;
+        }
 
-            if (!$customer = Mage::registry('current_customer')) {
-                $customer = Mage::getModel('customer/customer')->setId(null);
+        $customer = $this->_getCustomer();
+
+        try {
+            $errors = $this->_getCustomerErrors($customer);
+            if($this->getRequest()->getParam('check_seller_form')) {
+                $customer->setCompanyLocality($this->getRequest()->getPost('company_locality'));
+                $customer->setCompanyName($this->getRequest()->getPost('company_name'));
+                $customerErrors = Mage::getModel('marketplace/customer')->customValidate($customer);
             }
 
-            /* @var $customerForm Mage_Customer_Model_Form */
-            $customerForm = Mage::getModel('customer/form');
-            $customerForm->setFormCode('customer_account_create')
-                ->setEntity($customer);
-
-            $customerData = $customerForm->extractData($this->getRequest());
-
-            if ($this->getRequest()->getParam('is_subscribed', false)) {
-                $customer->setIsSubscribed(1);
-            }
-            /**
-             * Initialize customer group id
-             */
-            $customer->getGroupId();
-
-            if ($this->getRequest()->getPost('create_address')) {
-                /* @var $address Mage_Customer_Model_Address */
-                $address = Mage::getModel('customer/address');
-                /* @var $addressForm Mage_Customer_Model_Form */
-                $addressForm = Mage::getModel('customer/form');
-                $addressForm->setFormCode('customer_register_address')
-                    ->setEntity($address);
-
-                $addressData    = $addressForm->extractData($this->getRequest(), 'address', false);
-                $addressErrors  = $addressForm->validateData($addressData);
-                if ($addressErrors === true) {
-                    $address->setId(null)
-                        ->setIsDefaultBilling($this->getRequest()->getParam('default_billing', false))
-                        ->setIsDefaultShipping($this->getRequest()->getParam('default_shipping', false));
-                    $addressForm->compactData($addressData);
-                    $customer->addAddress($address);
-
-                    $addressErrors = $address->validate();
-                    if (is_array($addressErrors)) {
-                        $errors = array_merge($errors, $addressErrors);
-                    }
-                } else {
-                    $errors = array_merge($errors, $addressErrors);
-                }
+            if (is_array($customerErrors)) {
+                $errors = array_merge($customerErrors, $errors);
             }
 
-            try {
-                $customerErrors = $customerForm->validateData($customerData);
-                if ($customerErrors !== true) {
-                    $errors = array_merge($customerErrors, $errors);
-                } else {
-                    $customerForm->compactData($customerData);
-                    $customer->setPassword($this->getRequest()->getPost('password'));
-                    $customer->setConfirmation($this->getRequest()->getPost('confirmation'));
-                    if($this->getRequest()->getParam('check_seller_form'))
-                   {
-                     $validationFlag = 1;
-                   }
-                    else
-                   {
-                     $validationFlag = 0;
-                   }
-                    if($validationFlag == 1)
-                    {
-                      $customer->setData($this->getRequest()->getPost());
-                      $customerErrors = Mage::getModel('marketplace/customer')->customValidate($customer);
+            if (empty($errors)) {
+                $customer->cleanPasswordsValidationData();
+
+                // saving seller information
+                if($this->getRequest()->getParam('check_seller_form')) {
+                    $customerId = $customer->getEntityId();
+                    /******************** company banner upload code ******************************** */
+                    if (isset($_FILES['company_banner']['name']) && $_FILES['company_banner']['name'] != '') {
+                        $fileName = $_FILES['company_banner']['name'];
+                        $fieldName = 'company_banner';
+                        $companyBanner = $this->_uploadImage($fileName,$fieldName,$customerId);
+                        $customer->setCompanyBanner($companyBanner);
                     }
+                    /******************* end of company banner code ******************************** */
 
-                    $customerErrors = $customer->validate();
-                    if (is_array($customerErrors)) {
-                        $errors = array_merge($customerErrors, $errors);
+                    /******************** company logo upload code ******************************** */
+                    if (isset($_FILES['company_logo']['name']) && $_FILES['company_logo']['name'] != '') {
+                        $fileName = $_FILES['company_logo']['name'];
+                        $fieldName = 'company_logo';
+                        $companyLogo = $this->_uploadImage($fileName,$fieldName,$customerId);
+                        $customer->setCompanyLogo($companyLogo);
                     }
-                }
+                    /******************* end of company logo code ******************************** */
 
-                $validationResult = count($errors) == 0;
-
-                if (true === $validationResult) {
-                    $customer->save();
-
-                    Mage::dispatchEvent('customer_register_success',
-                        array('account_controller' => $this, 'customer' => $customer)
-                    );
-                    
-                     $validationFlag = 0;
-            // saving seller information
-            if($this->getRequest()->getParam('check_seller_form'))
-            {
-                $customerId = $customer->getEntityId();
-                  /******************** company banner upload code ******************************** */
-                  if (isset($_FILES['company_banner']['name']) && $_FILES['company_banner']['name'] != '') 
-                  {
-                   $fileName = $_FILES['company_banner']['name'];
-                   $fieldName = 'company_banner';
-                   
-                   $companyBanner = $this->_uploadImage($fileName,$fieldName,$customerId);
-                   $customer->setCompanyBanner($companyBanner);
-                  }                     
-                   /******************* end of company banner code ******************************** */
-                   
-                   /******************** company logo upload code ******************************** */
-                   if (isset($_FILES['company_logo']['name']) && $_FILES['company_logo']['name'] != '') 
-                  {
-                   $fileName = $_FILES['company_logo']['name'];
-                   $fieldName = 'company_logo';
-                   $companyLogo = $this->_uploadImage($fileName,$fieldName,$customerId);
-                   $customer->setCompanyLogo($companyLogo);
-                  }                     
-                   /******************* end of company logo code ******************************** */
-                   
                     $customer->setCompanyLocality($this->getRequest()->getPost('company_locality'));
                     $customer->setCompanyName($this->getRequest()->getPost('company_name'));
                     $customer->setCompanyDescription($this->getRequest()->getPost('company_description'));
@@ -162,56 +93,33 @@ class Cybage_Marketplace_AccountController extends Mage_Customer_AccountControll
                     } else {
                         $customer->setStatus(Mage::getStoreConfig('marketplace/status/pending'));
                     }
-
-                   $validationFlag = 1;                   
-            }
-            else
-            {
-                $customer->setSellerSubscriber(0);	
-            } 
-
-                    if ($customer->isConfirmationRequired()) {
-                        Mage::getModel('marketplace/customer')->sendNewAccountEmail(
-                            'confirmation',
-                            $session->getBeforeAuthUrl(),
-                            Mage::app()->getStore()->getId()
-                        );
-                        $session->addSuccess($this->__('Account confirmation is required. Please, check your email for the confirmation link. To resend the confirmation email please <a href="%s">click here</a>.', Mage::helper('customer')->getEmailConfirmationUrl($customer->getEmail())));
-                        $this->_redirectSuccess(Mage::getUrl('*/*/index', array('_secure'=>true)));
-                        return;
-                    } else {
-                        $session->setCustomerAsLoggedIn($customer);
-                        $url = $this->_welcomeCustomer($customer);
-                        $this->_redirectSuccess($url);
-                        return;
-                    }
                 } else {
-                    $session->setCustomerFormData($this->getRequest()->getPost());
-                    if (is_array($errors)) {
-                        foreach ($errors as $errorMessage) {
-                            $session->addError($errorMessage);
-                        }
-                    } else {
-                        $session->addError($this->__('Invalid customer data'));
-                    }
+                    $customer->setSellerSubscriber(0);
                 }
-            } catch (Mage_Core_Exception $e) {
-                $session->setCustomerFormData($this->getRequest()->getPost());
-                if ($e->getCode() === Mage_Customer_Model_Customer::EXCEPTION_EMAIL_EXISTS) {
-                    $url = Mage::getUrl('customer/account/forgotpassword');
-                    $message = $this->__('There is already an account with this email address. If you are sure that it is your email address, <a href="%s">click here</a> to get your password and access your account.', $url);
-                    $session->setEscapeMessages(false);
-                } else {
-                    $message = $e->getMessage();
-                }
-                $session->addError($message);
-            } catch (Exception $e) {
-                $session->setCustomerFormData($this->getRequest()->getPost())
-                    ->addException($e, $this->__('Cannot save the customer.'));
+
+                $customer->save();
+                $this->_dispatchRegisterSuccess($customer);
+                $this->_successProcessRegistration($customer);
+                return;
+            } else {
+                $this->_addSessionError($errors);
             }
+        } catch (Mage_Core_Exception $e) {
+            $session->setCustomerFormData($this->getRequest()->getPost());
+            if ($e->getCode() === Mage_Customer_Model_Customer::EXCEPTION_EMAIL_EXISTS) {
+                $url = $this->_getUrl('customer/account/forgotpassword');
+                $message = $this->__('There is already an account with this email address. If you are sure that it is your email address, <a href="%s">click here</a> to get your password and access your account.', $url);
+                $session->setEscapeMessages(false);
+            } else {
+                $message = $e->getMessage();
+            }
+            $session->addError($message);
+        } catch (Exception $e) {
+            $session->setCustomerFormData($this->getRequest()->getPost())
+                ->addException($e, $this->__('Cannot save the customer.'));
         }
-
-        $this->_redirectError(Mage::getUrl('*/*/create', array('_secure' => true)));
+        $errUrl = $this->_getUrl('*/*/create', array('_secure' => true));
+        $this->_redirectError($errUrl);
     }
     
     /**
@@ -340,7 +248,12 @@ class Cybage_Marketplace_AccountController extends Mage_Customer_AccountControll
                              * will be validated later to match each other and be of right length
                              */
                             $customer->setPassword($newPass);
-                            $customer->setConfirmation($confPass);
+
+                            // This is used for compatible with 1.9.1.0
+                            if (version_compare(Mage::getVersion(), '1.9.1.0', '>='))
+                                $customer->setPasswordConfirmation($confPass);
+                            else 
+                                $customer->setConfirmation($confPass);
                         } else {
                             $errors[] = $this->__('New password field cannot be empty.');
                         }

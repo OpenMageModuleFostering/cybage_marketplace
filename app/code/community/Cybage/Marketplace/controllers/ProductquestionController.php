@@ -26,9 +26,9 @@ class Cybage_Marketplace_ProductquestionController extends Mage_Core_Controller_
 
         try {
             Mage::getModel('marketplace/question')->saveQuestions();
-            Mage::getSingleton('core/session')->addSuccess($this->__('Question was successfully submitted!!'));
+            Mage::getSingleton('core/session')->addSuccess($this->__('Your query was sent to the seller. The seller shall get back to you soon!!'));
         } catch (Exception $e) {
-            Mage::getSingleton('core/session')->addError($this->__('Question was not submitted, Please Try After Some Time.'));
+            Mage::getSingleton('core/session')->addError($this->__('There was some technical problem processing your request, Please try after some time.'));
         }
         $block = $this->getLayout()->createBlock('core/messages', 'global_messages');
         $html = $block->toHtml();

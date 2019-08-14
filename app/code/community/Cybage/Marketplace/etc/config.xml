@@ -22,7 +22,7 @@
 <config>
     <modules>
         <Cybage_Marketplace>
-            <version>0.1.8</version>
+            <version>0.1.9</version>
         </Cybage_Marketplace>
     </modules>
     <frontend>
