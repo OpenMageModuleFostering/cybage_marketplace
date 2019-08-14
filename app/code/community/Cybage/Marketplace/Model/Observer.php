@@ -100,9 +100,10 @@ class Cybage_Marketplace_Model_Observer {
     public function pendingorders()
     {   
         $daylimit = Mage::getStoreConfig('marketplace/seller/order_pending_before_days',Mage::app()->getStore());        
-        $date1=date("Y-m-d H:i:s", Mage::getModel('core/date')->timestamp(strtotime('-'.$daylimit.'day', time())));        
+        $date1=date("Y-m-d H:i:s", Mage::getModel('core/date')->timestamp(strtotime('-'.$daylimit.'day', time()))); 
+        $resource = Mage::getSingleton("core/resource"); 
         $orderItemsCollection = Mage::getResourceModel('sales/order_item_collection');
-        $orderItemsCollection->getSelect()->join(array('sfo' =>'sales_flat_order'), 'main_table.order_id = sfo.entity_id', array('sfo.entity_id','sfo.status','sfo.created_at'));
+        $orderItemsCollection->getSelect()->join(array('sfo' =>$resource->getTableName('sales_flat_order')), 'main_table.order_id = sfo.entity_id', array('sfo.entity_id','sfo.status','sfo.created_at'));
         $orderItemsCollection->addAttributeToFilter('sfo.created_at',array('lteq' =>$date1));
         $orderItemsCollection->addAttributeToFilter('status', array('eq' =>'pending'));
         

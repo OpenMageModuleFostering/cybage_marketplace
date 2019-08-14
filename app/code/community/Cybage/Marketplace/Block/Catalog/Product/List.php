@@ -48,11 +48,11 @@ class Cybage_Marketplace_Block_Catalog_Product_List extends Mage_Catalog_Block_P
                 if ($_sellerIds) {
                     $where .= " OR ce.value in (".implode(',', $_sellerIds).")";
                 }
-
-                $collection->getSelect()->joinLeft(array('ce' => 'catalog_product_entity_int'), 'ce.entity_id=e.entity_id AND ce.attribute_id='.Mage::helper('marketplace')->getProductSellerAttributeId(),null);
+                $resource = Mage::getSingleton('core/resource');
+                $tableName = $resource->getTableName('catalog_product_entity_int');                
+                $collection->getSelect()->joinLeft($tableName.' As ce', 'ce.entity_id=e.entity_id AND ce.attribute_id='.Mage::helper('marketplace')->getProductSellerAttributeId(),null);
                 $collection->getSelect()->where($where);
-            }
-
+            }            
             $this->_prodCollection = $collection;
         }
 

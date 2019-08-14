@@ -68,46 +68,22 @@
     <?php
         $orderItemCollection = $_order->getOrderDetails($orderId);
         $_count = $orderItemCollection->count();
+        $subtotal = 0;
         foreach ($orderItemCollection as $_item):
             if ($_item->getParentItem()) continue;
     ?>
     <tbody>
         <?php echo $this->getItemHtml($_item) ?>
     </tbody>
+    <?php $subtotal += (float)$_item->getRowTotal();?>
     <?php endforeach; ?>
-    <tfoot>
+    <tfoot>    
        <tr>
-           <td colspan="4" style="text-align: right;"><?php echo $this->__('Subtotal') ?></td>
+           <td colspan="4" style="text-align: right;"><?php echo $this->__('Total') ?></td>
            <td style="text-align: right;">
-                <?php echo Mage::helper('core')->currency($_order->getSubtotal(), true, false);?>
+                <?php echo Mage::helper('core')->currency($subtotal, true, false);?>
            </td>
-        </tr>
-        <tr>
-           <td colspan="4" style="text-align: right;"><?php echo $this->__('Shipping & Handling') ?></td>
-           <td style="text-align: right;">
-              <?php echo Mage::helper('core')->currency($_order->getShippingAmount(), true, false);?>
-            </td>
-        </tr>
-        <?php if ($discountAmount = $_order->getDiscountAmount() > 0) {
-                if ($_order->getDiscountDescription()) {
-                    $discountLabel = $this->__('Discount (%s)', $_order->getDiscountDescription());
-                } else {
-                    $discountLabel = $this->__('Discount');
-                }
-        ?>
-        <tr>
-           <td colspan="4" style="text-align: right;"><?php echo $this->__($discountLabel) ?></td>
-           <td style="text-align: right;">
-              <?php echo Mage::helper('core')->currency($discountAmount, true, false);?>
-            </td>
-        </tr>
-        <?php }?>
-        <tr>
-            <td colspan="4" style="text-align: right;"> <strong> <?php echo $this->__('Grandtotal') ?> </strong> </td>
-           <td style="text-align: right;">
-              <strong> <?php echo Mage::helper('core')->currency($_order->getGrandTotal(), true, false);?></strong>
-            </td>
-        </tr>
+        </tr>       
     </tfoot>
 </table>
 <div class="buttons-set">

@@ -75,7 +75,7 @@ class Cybage_Marketplace_Helper_Data extends Mage_Core_Helper_Abstract
         return Mage::getStoreConfig(self::MARKETPLACE_PRODUCT_STATE);
     }
 
-    public function getNewProductUploadImageSize($check) {
+    public function getNewProductUploadImageSize($check=null) {
         if ($check == 'validate') {
             return Mage::getStoreConfig(self::MARKETPLACE_PRODUCT_UPLOAD_IMAGE_SIZE);
         } else {
@@ -198,10 +198,11 @@ class Cybage_Marketplace_Helper_Data extends Mage_Core_Helper_Abstract
                 ->addFieldToSelect('order_id')
                 ->addFieldToFilter('main_table.seller_id', $sellerId)
                 ->distinct(true);
-
+        $resource = Mage::getSingleton("core/resource");
+        $tblSalesFlatOrder = $resource->getTableName('sales_flat_order');        
         $orderItemCollection->getSelect()
-                ->join('sales_flat_order', 'sales_flat_order.entity_id=main_table.order_id', array('increment_id', 'status'))
-                ->columns(new Zend_Db_Expr("CONCAT(`sales_flat_order`.`customer_firstname`, ' ',`sales_flat_order`.`customer_lastname`) AS billname"));
+                ->join($tblSalesFlatOrder, $tblSalesFlatOrder.'.entity_id=main_table.order_id', array('increment_id', 'status'))
+                ->columns(new Zend_Db_Expr("CONCAT(`$tblSalesFlatOrder`.`customer_firstname`, ' ',`$tblSalesFlatOrder`.`customer_lastname`) AS billname"));
 
         $orderItemCollection->getSelect()->columns('SUM(row_total + shipping_charges) AS Total');
         $orderItemCollection->getSelect()->columns('SUM(row_invoiced) AS Amount Received');
@@ -212,13 +213,13 @@ class Cybage_Marketplace_Helper_Data extends Mage_Core_Helper_Abstract
         $dateTo = date('Y-m-d H:i:s', strtotime($dateTo . "+1 day"));
 
         if ($dateFrom != '') {
-            $orderItemCollection->addFieldToFilter('sales_flat_order.created_at', array('from' => "$dateFrom"));
+            $orderItemCollection->addFieldToFilter($tblSalesFlatOrder.'.created_at', array('from' => "$dateFrom"));
         }
         if ($dateTo != '') {
-            $orderItemCollection->addFieldToFilter('sales_flat_order.created_at', array('to' => "$dateTo"));
+            $orderItemCollection->addFieldToFilter($tblSalesFlatOrder.'.created_at', array('to' => "$dateTo"));
         }
         if ($orderStatus != '') {
-            $orderItemCollection->addFieldToFilter('sales_flat_order.status', "$orderStatus");
+            $orderItemCollection->addFieldToFilter($tblSalesFlatOrder.'.status', "$orderStatus");
         }
 
         return($orderItemCollection);
@@ -294,7 +295,8 @@ class Cybage_Marketplace_Helper_Data extends Mage_Core_Helper_Abstract
         $orderItemCollection = $marketPlaceModel->getOrderDetails($orderId);
 
         $orderTotal = array();
-
+        $orderTotal['subtotal'] = 0;  
+        $orderTotal['shippingcharge'] = 0;
         foreach ($orderItemCollection as $_item) {
             $orderTotal['subtotal'] += (float) $_item->getRowTotal();
             $orderTotal['shippingcharge'] += (float) $_item->getShippingCharges();

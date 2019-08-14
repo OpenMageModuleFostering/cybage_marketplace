@@ -25,7 +25,7 @@
 </div>
 <div class="store-details">
     <div class="sub-heading"><h5><?php echo $this->__('About ').$seller['company_name']?></h5></div>
-    <?php if($seller['company_banner']):?>
+    <?php if(!empty($seller['company_banner'])):?>
         <div class="company-banner">
             <img src="<?php echo $seller['company_banner']?>" width="<?php echo Mage::getStoreConfig('marketplace/marketplace/default_width').'px'?>" height="<?php echo Mage::getStoreConfig('marketplace/marketplace/default_height').'px'?>" />
         </div>

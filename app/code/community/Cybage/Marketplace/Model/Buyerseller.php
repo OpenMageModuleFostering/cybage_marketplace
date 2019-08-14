@@ -105,9 +105,9 @@ class Cybage_Marketplace_Model_Buyerseller extends Mage_Core_Model_Abstract
         return true;
     }
 
-    public function getActiveNotificationForOrder($oid,$pid) {
+    public function getActiveNotificationForOrder($oid,$pid=null) {
         if($pid) {
-            $select =$this->read()->select()->from("marketplace_buyersellercomm_notifications","count('flag')")
+            $select =$this->read()->select()->from($this->resource()->getTableName("marketplace_buyersellercomm_notifications"),"count('flag')")
             ->where("order_id=?",$oid)
             ->where("product_id=?",$pid)
             ->where("flag=?","1");
@@ -117,7 +117,7 @@ class Cybage_Marketplace_Model_Buyerseller extends Mage_Core_Model_Abstract
                 return $data["count('flag')"];
             }
         } else {
-            $select = $this->read()->select()->from("marketplace_buyersellercomm_notifications","count('flag')")
+            $select = $this->read()->select()->from($this->resource()->getTableName("marketplace_buyersellercomm_notifications"),"count('flag')")
             ->where("order_id=?",$oid)
             ->where("flag=?","1");
             $result = $this->read()->fetchAll($select);
@@ -130,41 +130,46 @@ class Cybage_Marketplace_Model_Buyerseller extends Mage_Core_Model_Abstract
 
     public function getColection() {
         $params = Mage::app()->getRequest()->getParams();
-        $oid =$params['order'];
+        if(!empty($params['order'])){
+         $oid =$params['order'];
+        }        
+        if(!empty($params['product'])){
         $pid =$params['product'];
+        }
         if(Mage::getSingleton('customer/session')->isLoggedIn()) {
             $customerData = Mage::getSingleton('customer/session')->getCustomer();
             $sellerId=$customerData->getId();
             }
         //Create query to gate prodcut name
+         
         $selectProducNameId = $this->read()->select()
-                            ->from(array('ea' => 'eav_attribute'),array('ea.attribute_id'))
+                            ->from(array('ea' => $this->resource()->getTableName('eav_attribute')),array('ea.attribute_id'))
                             ->where('ea.attribute_code=?','name')
-                            ->join(array('eet' => 'eav_entity_type'),'ea.entity_type_id = eet.entity_type_id',array())
+                            ->join(array('eet' => $this->resource()->getTableName('eav_entity_type')),'ea.entity_type_id = eet.entity_type_id',array())
                             ->where('eet.entity_type_code=?','catalog_product');
         $producNameId = $this->read()->fetchOne($selectProducNameId);
         
         //Create query to gate customer first name ,last name
         $selectCustomerfirstnameId = $this->read()->select()
-                            ->from(array('ea' => 'eav_attribute'),array('ea.attribute_id'))
+                            ->from(array('ea' => $this->resource()->getTableName('eav_attribute')),array('ea.attribute_id'))
                             ->where('ea.attribute_code =?','firstname')
-                            ->join(array('eet' => 'eav_entity_type'),'ea.entity_type_id = eet.entity_type_id',array())
+                            ->join(array('eet' => $this->resource()->getTableName('eav_entity_type')),'ea.entity_type_id = eet.entity_type_id',array())
                             ->where('eet.entity_type_code=?','customer');
         $customerfirstnameId = $this->read()->fetchOne($selectCustomerfirstnameId);
         
         $selectCustomerLastNameId = $this->read()->select()
-                            ->from(array('ea' => 'eav_attribute'),array('ea.attribute_id'))
+                            ->from(array('ea' => $this->resource()->getTableName('eav_attribute')),array('ea.attribute_id'))
                             ->where('ea.attribute_code =?','lastname')
-                            ->join(array('eet' => 'eav_entity_type'),'ea.entity_type_id = eet.entity_type_id',array())
+                            ->join(array('eet' => $this->resource()->getTableName('eav_entity_type')),'ea.entity_type_id = eet.entity_type_id',array())
                             ->where('eet.entity_type_code=?','customer');
         $customerLastNameId = $this->read()->fetchOne($selectCustomerLastNameId);
 
-        if($pid) {
-            $select = $this->read()->select()->from(array('buyer'=>'marketplace_buyersellercomm_notifications'),
+        if(!empty($pid)) {
+            $select = $this->read()->select()->from(array('buyer'=>$this->resource()->getTableName('marketplace_buyersellercomm_notifications')),
                                                     array('sales.increment_id','prod.value','comment','created_at','sales.customer_firstname','sales.customer_lastname'))
-                                              ->joinLeft(array('sales'=>'sales_flat_order'),
+                                              ->joinLeft(array('sales'=>$this->resource()->getTableName('sales_flat_order')),
                                                             'buyer.order_id = sales.entity_id',array())
-                                              ->joinLeft(array('prod'=>'catalog_product_entity_varchar'),
+                                              ->joinLeft(array('prod'=>$this->resource()->getTableName('catalog_product_entity_varchar')),
                                                                             'buyer.product_id = prod.entity_id',array())
                                                ->where('buyer.product_id=?',$pid)
                                               ->where('buyer.order_id=?',$oid)
@@ -173,29 +178,29 @@ class Cybage_Marketplace_Model_Buyerseller extends Mage_Core_Model_Abstract
                                               ->where('prod.store_id=?',Mage::app()->getStore()->getCode());
         } else {
             $select = $this->read()->select()
-            ->from(array('buyer'=>'marketplace_buyersellercomm_notifications'),
+            ->from(array('buyer'=>$this->resource()->getTableName('marketplace_buyersellercomm_notifications')),
                     array("prod.value","comment","created_at","sales.seller_id","buyer.customer_id",new Zend_Db_Expr("CONCAT_WS(' ', custfirstname.value, custlastname.value) as fullname")))
                     ->where('buyer.order_id=?',$oid)
-            ->joinLeft(array('prod'=>'catalog_product_entity_varchar'),
+            ->joinLeft(array('prod'=>$this->resource()->getTableName('catalog_product_entity_varchar')),
                         'buyer.product_id = prod.entity_id',array())
                     //Remove hard coded value for product name and added by query
                 ->where('prod.attribute_id=?',$producNameId)
                 ->where('prod.store_id=?',Mage::app()->getStore()->getCode())
-            ->joinLeft(array('sales'=>'sales_flat_order_item'),
+            ->joinLeft(array('sales'=>$this->resource()->getTableName('sales_flat_order_item')),
                         'buyer.order_id = sales.order_id',array())
                     //Added seller condition
                      ->where('sales.seller_id=?',$sellerId)
-            ->joinLeft(array('custfirstname'=>'customer_entity_varchar'),
+            ->joinLeft(array('custfirstname'=>$this->resource()->getTableName('customer_entity_varchar')),
                         'buyer.customer_id = custfirstname.entity_id',array())
                     //Remove hard coded value for customer name and added by query
                 ->where('custfirstname.attribute_id=?',$customerfirstnameId)
-            ->joinLeft(array('custlastname'=>'customer_entity_varchar'),
+            ->joinLeft(array('custlastname'=>$this->resource()->getTableName('customer_entity_varchar')),
                         'buyer.customer_id = custlastname.entity_id',array())
                 ->where('custlastname.attribute_id=?',$customerLastNameId);
         }
 
         $result = $this->read()->fetchAll($select);
-
+        $collection= array(); 
         foreach ($result as $data) {
             $collection[] = array($data);
         }
@@ -226,7 +231,7 @@ class Cybage_Marketplace_Model_Buyerseller extends Mage_Core_Model_Abstract
 
         $orderIds = implode(', ',$arr_order_for_filter);
         if($orderIds) {
-            $select = $this->read()->select()->from("marketplace_buyersellercomm_notifications","count('flag')")
+            $select = $this->read()->select()->from($this->resource()->getTableName("marketplace_buyersellercomm_notifications","count('flag')"))
             ->where("order_id IN (".$orderIds.")")
             ->where("flag=?","1");
             $result = $this->read()->fetchAll($select);
@@ -269,7 +274,7 @@ class Cybage_Marketplace_Model_Buyerseller extends Mage_Core_Model_Abstract
     }
 
     public function getSellerInfo($order) {
-        $select = $this->read()->select()->distinct(true)->from(array('sales'=>'sales_flat_order_item'),
+        $select = $this->read()->select()->distinct(true)->from(array('sales'=>$this->resource()->getTableName('sales_flat_order_item')),
                                                         array('seller_id'))
                                                  ->where('sales.order_id=?',$order);
         $result = $this->read()->fetchAll($select);
@@ -280,7 +285,7 @@ class Cybage_Marketplace_Model_Buyerseller extends Mage_Core_Model_Abstract
     }
 
     public function getBuyerinfo($orderid) {
-        $select = $this->read()->select()->distinct(true)->from(array('sales'=>'sales_flat_order'),
+        $select = $this->read()->select()->distinct(true)->from(array('sales'=>$this->resource()->getTableName('sales_flat_order')),
                 array('customer_email','customer_firstname','customer_lastname'))
                 ->where('sales.entity_id=?',$orderid);
         $result = $this->read()->fetchAll($select);

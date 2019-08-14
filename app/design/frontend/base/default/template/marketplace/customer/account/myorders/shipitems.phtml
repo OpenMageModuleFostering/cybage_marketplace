@@ -53,27 +53,11 @@
                 <!--Calculate subtotal,shipping charge and grandtotal-->
                 <tfoot>
                    <tr>
-                       <td style="text-align: right;" colspan="5"><?php echo $this->__('Subtotal') ?></td>
+                       <td style="text-align: right;" colspan="5"><?php echo $this->__('Total') ?></td>
                        <td style="text-align: right;">
                             <?php echo $fomattedSubtotal = Mage::helper('core')->currency($subtotal, true, false);?>
                        </td>
-                    </tr>
-                    <tr>
-                       <td style="text-align: right;" colspan="5"><?php echo $this->__('Shipping & Handling') ?></td>
-                       <td style="text-align: right;">
-                          <?php echo $formtattedShipCharge = Mage::helper('core')->currency($shippingCharge, true, false);?>
-                        </td>
-                    </tr>
-                    <tr>
-                      <?php if($subtotal || $shiipingCharge):?>
-                        <td style="text-align: right;" colspan="5"><?php echo $this->__('Grandtotal') ?></td>
-                       <td style="text-align: right;">
-                          <?php $grandTotal = $subtotal + $shippingCharge;?>
-                          <?php echo $grandTotal = Mage::helper('core')->currency($grandTotal, true, false);?>
-                        </td>
-                      <?php endif;?>
-                      
-                    </tr>
+                    </tr>                   
                 </tfoot>
                 <!--Calculate subtotal,shipping charge and grandtotal-->
         <?php endif;?>

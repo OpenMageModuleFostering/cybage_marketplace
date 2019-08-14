@@ -20,8 +20,8 @@
 
 $seller = $this->getSellerData();
 ?>
-<?php if ($seller['company_logo']):?>
+<?php if (!empty($seller['company_logo'])):?>
 <div class="customer-logo">
-    <img src="<?php echo Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_MEDIA)."/".$seller['company_logo']?>" width ="195px" height="225px"/>
+    <img src="<?php echo $seller['company_logo'];?>" width ="195px" height="225px"/>
 </div>
 <?php endif;?>

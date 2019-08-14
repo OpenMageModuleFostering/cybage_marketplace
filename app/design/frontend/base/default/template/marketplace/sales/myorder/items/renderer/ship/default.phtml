@@ -182,7 +182,7 @@
         </span>
     </td>
     <td>
-    <input type="text" value="<?php echo number_format($this->getItem()->getQtyOrdered(),0) ?>" name="shipment[items][<?php echo $order_id;?>]" class="input-text"></td>
+    <input type="text" value="<?php echo number_format($this->getItem()->getQtyOrdered(),0) ?>" name="shipment[items][<?php echo $this->getItem()->getId(); ?>]" class="input-text"></td>
     <td class="a-right">
         <?php if ($this->helper('tax')->displaySalesBothPrices() || $this->helper('tax')->displaySalesPriceExclTax()): ?>
             <span class="price-excl-tax">
@@ -296,12 +296,14 @@
     <th class="a-right"><?php echo $this->getOrder()->formatPrice($this->helper('checkout')->getSubtotalInclTax($this->getItem())); ?></th>
     <?php endif; ?>
     -->
-    <td>
+    
     <?php 
     $cnt = Mage::getModel("marketplace/buyerseller")->getActiveNotificationForOrder($order_id,$prod_id); 
     if($cnt>0) {
-    ?> 
+    ?>
+    <td>    
     <p><?php echo $cnt;?><?php echo $this->__('Notification(s)')?> <a href="<?php echo $this->getBaseUrl().'marketplace/buyerseller/reply/order/'.$order_id.'/product/'.$prod_id.'/'?>"><?php echo $this->__('Reply To Questions')?></a></p> 
+    </td>
     <?php } ?>
-     </td>
+     
 </tr>

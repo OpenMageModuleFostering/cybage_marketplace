@@ -29,6 +29,7 @@
     <col width="1" />
     <col width="1" />
     <col width="1" />
+    <col width="1" />
     <thead>
         <tr>
             <th><?php echo $this->__('Product Name') ?></th>
@@ -36,7 +37,7 @@
             <th class="a-center"><?php echo $this->__('Price') ?></th>
             <th class="a-center"><?php echo $this->__('Qty') ?></th>
             <th class="a-center"><?php echo $this->__('Subtotal') ?></th>
-            <th class="a-center"><?php echo $this->__('Notification') ?></th>
+            <th class="a-center"><?php echo $this->__('Notification') ?></th>            
         </tr>
     </thead>
     <?php $_count = $subtotal = $shippingCharge = $grandTotal = 0; ?>
@@ -47,42 +48,17 @@
             <tbody>
                 <?php echo $this->getItemHtml($_item) ?>
             </tbody>
+            <?php $subtotal += (float)$_item->getRowTotal();?>
             <?php endforeach; ?>
 
             <!--Calculate subtotal,shipping charge and grandtotal-->
-            <tfoot>
+            <tfoot>            
                <tr>
-                   <td colspan="4" style="text-align: right;"><?php echo $this->__('Subtotal') ?></td>
+                   <td colspan="4" style="text-align: right;"><?php echo $this->__('Total') ?></td>
                    <td style="text-align: right;">
-                        <?php echo Mage::helper('core')->currency($marketPlaceOrderObj->getSubtotal(), true, false);?>
+                        <?php echo Mage::helper('core')->currency($subtotal, true, false);?>
                    </td>
-                </tr>
-                <tr>
-                   <td colspan="4" style="text-align: right;"><?php echo $this->__('Shipping & Handling') ?></td>
-                   <td style="text-align: right;">
-                      <?php echo Mage::helper('core')->currency($marketPlaceOrderObj->getShippingAmount(), true, false);?>
-                    </td>
-                </tr>
-                <?php if ($discountAmount = $marketPlaceOrderObj->getDiscountAmount() > 0) {
-                        if ($marketPlaceOrderObj->getDiscountDescription()) {
-                            $discountLabel = $this->__('Discount (%s)', $marketPlaceOrderObj->getDiscountDescription());
-                        } else {
-                            $discountLabel = $this->__('Discount');
-                        }
-                ?>
-                <tr>
-                   <td colspan="4" style="text-align: right;"><?php echo $this->__($discountLabel) ?></td>
-                   <td style="text-align: right;">
-                      <?php echo Mage::helper('core')->currency($discountAmount, true, false);?>
-                    </td>
-                </tr>
-                <?php }?>
-                <tr>
-                    <td colspan="4" style="text-align: right;"> <strong> <?php echo $this->__('Grandtotal') ?> </strong> </td>
-                   <td style="text-align: right;">
-                      <strong> <?php echo Mage::helper('core')->currency($marketPlaceOrderObj->getGrandTotal(), true, false);?></strong>
-                    </td>
-                </tr>
+                </tr>               
             </tfoot>
             <!--Calculate subtotal,shipping charge and grandtotal-->
     <?php endif;?>

@@ -66,9 +66,9 @@ class Cybage_Marketplace_Model_Resource_Customer extends Mage_Customer_Model_Res
         /*Check if same company name already exist*/
         $writeAdapter = $this->_getWriteAdapter();
         $companybind    = array('company_name' => $customer->getCompanyName());
-
+        $resource = Mage::getSingleton("core/resource");
         $compselect = $writeAdapter->select()
-            ->from('customer_entity_varchar', array($this->getEntityIdField()))
+            ->from($resource->getTableName('customer_entity_varchar'), array($this->getEntityIdField()))
             ->where('value = :company_name AND attribute_id ='.$companyAttrId);
 
         if ($customer->getId()) {

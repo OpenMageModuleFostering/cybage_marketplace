@@ -46,8 +46,7 @@ class Cybage_Marketplace_OrderController extends Mage_Core_Controller_Front_Acti
                     $comment = isset($data['sellerform_comment'])? trim(strip_tags($data['sellerform_comment'])) : '';
                     $trackingNo = isset($data['trackin_no']) ? $data['trackin_no']:'';
                 
-                    $order->save();
-                    $processOrder = $order->processOrder($data['status'],$orderId,$trackingNo,$comment);
+                    $order->save();            
 
                     if($notify) {
                         /*Get Buyer information*/
@@ -61,10 +60,10 @@ class Cybage_Marketplace_OrderController extends Mage_Core_Controller_Front_Acti
                         $order->sendOrderStatusEmail(($data['status']), $buyerEmail, $buyerName, $comment, $orderId, $sellerEmail,$sellerName);
                     }
 
-                    if($processOrder) {
+                   
                         Mage::getSingleton('core/session')->addSuccess('Order status is updated.');
                         $this->_redirect('marketplace/account/vieworder',$arguement=array('order_id' => $orderId));
-                    }
+                   
                 } else {
                    Mage::getModel('core/session')->addError("Invoice is not generated for this order,please contact administrator.");
                    $this->_redirect('marketplace/account/vieworder',$arguement=array('order_id' => $orderId));

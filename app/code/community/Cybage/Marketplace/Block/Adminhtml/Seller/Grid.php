@@ -57,26 +57,6 @@ class Cybage_Marketplace_Block_Adminhtml_Seller_Grid extends Mage_Adminhtml_Bloc
             'width'     => '150',
             'index'     => 'email'
         ));
-/*
-        $this->addColumn('store_name', array(
-            'header' => Mage::helper('marketplace')->__('Store Name'),
-            'align' => 'left',
-            'index' => 'store_name',
-            'width' => '250px',
-        ));
-
-        $this->addColumn('contact_no', array(
-            'header' => Mage::helper('marketplace')->__('Contact No'),
-            'align' => 'left',
-            'index' => 'contact_no',
-        ));
-
-        $this->addColumn('item_shipped_from', array(
-            'header' => Mage::helper('marketplace')->__('Item Shipped From'),
-            'align' => 'left',
-            'index' => 'item_shipped_from',
-        ));
-*/
 
         $this->addColumn('status', array(
             'header' => Mage::helper('marketplace')->__('Status'),
@@ -97,7 +77,7 @@ class Cybage_Marketplace_Block_Adminhtml_Seller_Grid extends Mage_Adminhtml_Bloc
                 'caption' => Mage::helper('marketplace')->__('Edit'),
                 'url'     => array(
                     'base'=>'*/*/edit',
-                    'params'=>array('store'=>$storeId)
+                    'params'=>array('store'=>$this->getParam('store',''))
                 ),
                     'field'   => 'id'
                 )

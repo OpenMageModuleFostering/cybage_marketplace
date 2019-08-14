@@ -39,7 +39,8 @@ class Cybage_Marketplace_Model_Selleroptions extends Mage_Core_Model_Abstract
         $seller     = Mage::helper('marketplace')->getSellerInfo($sellerName);
         $_sellerId  = $seller['entity_id'];
         
-        $_avgRating = $_percent = $_prodCount = $_reviewCount = $optionCount= 0;
+        $_avgRating = $_percent = $_prodCount = $_reviewCount = 0;
+        $optionCount = 1;
         $_sellerReviewData = array();
         
         $_productCollection = Mage::getResourceModel('catalog/product_collection')
@@ -81,7 +82,8 @@ class Cybage_Marketplace_Model_Selleroptions extends Mage_Core_Model_Abstract
     }
     
     public function getSellerAllRatingsAggregate($_sellerId) {
-        $_avgRating = $_percent = $_prodCount = $_reviewCount = $optionCount= 0;
+        $_avgRating = $_percent = $_prodCount = $_reviewCount = 0;
+        $optionCount = 1; 
         $_sellerReviewData = array();
         
         $_productCollection = Mage::getResourceModel('catalog/product_collection')

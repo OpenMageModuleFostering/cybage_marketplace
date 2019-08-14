@@ -18,7 +18,7 @@
  * @author     Cybage Software Pvt. Ltd. <Support_Magento@cybage.com>
  */
 
-$installer = new Mage_Sales_Model_Resource_Setup;
+$installer = new Mage_Sales_Model_Resource_Setup('core_setup');
 $installer->startSetup(); 
 $attribute  = array(
    'type'          => 'int',

@@ -18,21 +18,10 @@
  * @author     Cybage Software Pvt. Ltd. <Support_Magento@cybage.com>
  */
 
-$installer = new Mage_Sales_Model_Resource_Setup('core_setup');
-$installer->startSetup(); 
-$attribute  = array(
-   'type'          => 'int',
-   'backend_type'  => 'text',
-   'frontend_input' => 'text',
-   'is_user_defined' => true,
-   'label'         => 'Seller id',
-   'visible'       => true,
-   'required'      => false,
-   'user_defined'  => true,
-   'searchable'    => false,
-   'filterable'    => true,
-   'comparable'    => true,
-   'default'       => 0
-);
-$installer->addAttribute('quote_item', 'seller_id', $attribute);
+$installer = $this;
+$installer->startSetup();
+$installer->run("        
+UPDATE `{$installer->getTable('eav/attribute')}` set `is_user_defined` = 1 where `attribute_code` = 'seller_id';
+");
+
 $installer->endSetup();

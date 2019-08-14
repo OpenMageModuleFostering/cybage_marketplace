@@ -30,7 +30,7 @@
 </dl>
 <p class="order-date"><?php echo $this->__('Order Date: %s', $this->formatDate($_order->getCreatedAtStoreDate(), 'long')) ?></p>
 <?php if (!$_order->getIsVirtual()): ?>
-<form method="post" name="shipment" action="<?php echo $this->getBaseUrl()."marketplace/order/save"?>">
+<form method="post" name="shipment" id="shipment" action="<?php echo $this->getBaseUrl()."marketplace/order/save"?>">
 <input type="hidden" name ="order_id" value="<?php  echo $orderId?>" />
 <div class="col2-set order-info-box">
     <div class="col-1">
@@ -155,3 +155,10 @@
     </div>
 </div>
 </form>
+
+<script type="text/javascript">
+//<![CDATA[
+	var dataForm = new VarienForm('shipment', true);
+//]]>
+</script>
+    

@@ -367,7 +367,7 @@ class Cybage_Marketplace_ProductController extends Mage_Core_Controller_Front_Ac
                         $uploadedFile = $path1 . $uploader->getUploadedFileName();
                         $mediaArray[$key] = $uploadedFile;
                     } catch (Exception $e) {
-                        $this->_getSession()->addError($e->getMessage());
+                        $this->_getSession()->addError("The selected file can't be uploaded.");
                         //die($e->getMessage());
                     }
                 }
@@ -401,7 +401,7 @@ class Cybage_Marketplace_ProductController extends Mage_Core_Controller_Front_Ac
      * @param : $action(edit or add or delete), $result (success or failure),$productId(Mage_Catalog_Product_Model)
      * @return : void
      */
-    public function saveLoggingAction($action,$result,$productId,$sellerId)
+    public function saveLoggingAction($action,$result,$productId,$sellerId=null)
     {
       return Mage::getModel('marketplace/logging')->saveProductLog($action,$result,$productId,$sellerId);
     }

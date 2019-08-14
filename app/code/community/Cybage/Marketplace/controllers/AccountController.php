@@ -25,11 +25,18 @@ class Cybage_Marketplace_AccountController extends Mage_Customer_AccountControll
      * Create customer account action
      */
     public function createPostAction()
-    {
+    {     
+        
         $session = $this->_getSession();
         if ($session->isLoggedIn()) {
             $this->_redirect('*/*/');
             return;
+        }
+        
+        $isMarketplaceEnabled = Mage::Helper("marketplace")->isMarketplaceEnabled();
+        if($isMarketplaceEnabled == false)
+        {
+          return parent::createPostAction();
         }
 
         $session->setEscapeMessages(true); // prevent XSS injection in user input

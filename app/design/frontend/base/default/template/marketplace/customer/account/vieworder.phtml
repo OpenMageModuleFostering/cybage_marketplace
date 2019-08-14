@@ -22,12 +22,25 @@
    $marketPlaceModel = Mage::getModel('marketplace/marketplace');
    $orderDetails = $marketPlaceModel->getOrderDetails($orderId);
    $seller_id = Mage::getSingleton('customer/session')->getId();
+   
+   $orderModel = Mage::getModel('marketplace/order');
+   $orderModelObj = $orderModel->load($orderId);
+   $sellerOrderDetails = $orderModelObj->getOrderDetails($orderId);       
 ?>
+
 <?php $_order = Mage::getModel("sales/order")->load($orderId); ?>
 <?php echo $this->getMessagesBlock()->getGroupedHtml() ?>
 <div class="page-title title-buttons">
-<?php if($_order->getStatus() == 'processing') {?>
+<?php $_enableShipOrderLink = false; ?>
+<?php foreach($sellerOrderDetails as $_item): ?>
+<?php if($_item->getQtyShipped() < $_item->getQtyOrdered()): ?>
+<?php $_enableShipOrderLink = true; ?>
+<?php endif; ?>
+<?php endforeach; ?>
+
+<?php if($_order->getStatus() == 'processing' && $_enableShipOrderLink == true) {?>
         <a href="<?php echo $this->getUrl('marketplace/order/ship',$arguement=array('order_id' => $orderId)) ?>" class="link-print" ><?php echo $this->__('Ship Order') ?></a>
+        
 <?php }?>
     <h1><?php echo $this->__('Order #%s - %s', $_order->getRealOrderId(), $_order->getStatusLabel()) ?></h1>
     <a href="<?php echo $this->getUrl('marketplace/order/printorder',$arguement=array('order_id' => $orderId,'seller_id' => $seller_id)) ?>" class="link-print" onclick="this.target='_blank';"><?php echo $this->__('Print Order') ?></a>
@@ -89,61 +102,52 @@
 </div>
 <?php echo $this->getChildHtml('items');?>
 
-<?php if($_order->hasShipments()) 
-{
-    $trackingData = $this->getShippingInfo($_order); 
+<?php 
+   $orderProducts = array(); // array of product id's which are presents in order
+   foreach($sellerOrderDetails as $_orderProducts)
+   {
+    $orderProducts[] = $_orderProducts->getProductId();  
+   }   
 ?>
-<div class="col2-set order-info-box">
+<?php if($_order->hasShipments()): ?>
+<div class="col2-set order-info-box" style="margin-top:15px !important">
     <div class="col-1" style="width:100% !important">
         <div class="box" >
             <div class="box-title">
                 <h2><?php echo $this->__('Tracking Information') ?></h2>                
             </div>
-            <div class="box-content">
-               <?php foreach($trackingData as $track): ?>    
-                <div style="float:left">               
-                <table class="tracking-table-popup data-table">
-                  <tbody>
+            <table class="data-table" id="my-shipment-table">
+               <col width="1"/>
+               <col width="1" />
+               <col width="1" />
+               <col width="1" />               
+                <thead>
                     <tr>
-                        <th class="label"><?php echo $this->__('Tracking Number:'); ?></th>
-                        <td class="value"><?php echo $track->getNumber(); ?></td>
+                        <th><?php echo $this->__('Carrier') ?></th>
+                        <th><?php echo $this->__('Title') ?></th>
+                        <th class="a-center"><?php echo $this->__('Tracking Number') ?></th>
+                        <th class="a-center"><?php echo $this->__('Products') ?></th>
                     </tr>
-                    <!--tr>
-                        <th class="label"><?php //echo $this->__('Carrier:'); ?></th>
-                        <td class="value"><?php //echo $track->getCarrierCode(); ?></td>
-                    </tr>
-                    
-                    <tr>
-                        <th class="label"><?php //echo $this->__('Title:'); ?></th>
-                        <td class="value"><?php //echo $track->getTitle() ?></td>
-                    </tr-->
-                  </tbody>
-                </table>
-                </div>
-                <?php 
-                      $comments = Mage::getResourceModel('sales/order_shipment_comment_collection')
-                                                         ->setShipmentFilter($track->getParentId())
-                ?>
-                <div style="float:right">                    
-                <table class="tracking-table-popup data-table">
-                <?php foreach($comments as $_comments): ?>
-                  <tbody>                  
-                    <tr>
-                        <th class="label"><?php echo $this->__('Comment:'); ?></th>
-                        <td class="value"><?php echo $_comments->getComment(); ?></td>
-                    </tr>
-                    <tr>
-                        <th class="label"><?php echo $this->__('Date:'); ?></th>
-                        <td class="value"><?php echo $_comments->getcreated_at(); ?></td>
-                    </tr>
-                  </tbody>
-                  <?php endforeach; ?> 
-                </table>
-                </div>
-               <?php endforeach; ?> 
-            </div>
+                <?php foreach($_order->getShipmentsCollection() as $shipment): ?>
+                    <tbody>
+                       <?php foreach($shipment->getAllTracks() as $tracking_number): ?>                    
+                       <?php foreach ($shipment->getAllItems() as $product): ?>
+                       <?php if (in_array($product->getProductId(), $orderProducts)):?>
+                        <tr>
+                           <td><?php echo $tracking_number->getCarrierCode(); ?></td>
+                           <td><?php echo $tracking_number->getTitle(); ?></td>                          
+                           <td><?php echo $tracking_number->getNumber(); ?></td>                          
+                           <td><?php echo $product->getName() . "<br/>"; ?> </td>                          
+                        </tr>                        
+                       <?php endif; ?>
+                       <?php endforeach; ?>
+                       <?php endforeach; ?>                       
+                    </tbody>
+                <?php endforeach; ?>    
+                </thead>    
+            </table>
         </div>
     </div>
 </div>
-<?php } ?> 
+<?php endif; ?> 
 <?php echo $this->getChildHtml('selleroptions');?>

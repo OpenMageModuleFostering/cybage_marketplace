@@ -81,9 +81,10 @@ class Cybage_Marketplace_Model_Marketplace extends Mage_Core_Model_Abstract
             //Get Seller_id attribute id
             $_product = Mage::getModel('catalog/product');
             $attributeId = $_product->getResource()->getAttribute('seller_id')->getAttributeId();
+                         
             $select = $connectionRead->select('coe.entity_id')
-                    ->from('catalog_product_entity As coe')
-                    ->joinLeft(array('cpet' => 'catalog_product_entity_int'), 'coe.entity_id = cpet.entity_id')
+                    ->from($this->resource()->getTableName('catalog_product_entity').' As coe')
+                    ->joinLeft(array('cpet' => $this->resource()->getTableName('catalog_product_entity_int')), 'coe.entity_id = cpet.entity_id')
                     ->where('attribute_id=?', $attributeId)
                     ->where('value=?', $customerId);
             $sellerProducts = $connectionRead->fetchCol($select);
@@ -106,10 +107,10 @@ class Cybage_Marketplace_Model_Marketplace extends Mage_Core_Model_Abstract
     /* Get question count for which reply not present. */
     public function getUnrepliedQueCount() {
         $unrepliedQueCount = 0;
-        $subselect = $this->read()->select()->distinct(true)->from(array('q' => 'marketplace_askquestion_question'), array('q.entity_id'))
-                ->joinRight(array('r' => 'marketplace_askquestion_reply'), ' q.entity_id = r.parent_id', array());
+        $subselect = $this->read()->select()->distinct(true)->from(array('q' => $this->resource()->getTableName('marketplace_askquestion_question')), array('q.entity_id'))
+                ->joinRight(array('r' => $this->resource()->getTableName('marketplace_askquestion_reply')), ' q.entity_id = r.parent_id', array());
 
-        $select = $this->read()->select()->from(array("q" => "marketplace_askquestion_question"), array("count(distinct q.entity_id)"))
+        $select = $this->read()->select()->from(array("q" => $this->resource()->getTableName("marketplace_askquestion_question")), array("count(distinct q.entity_id)"))
                 ->where("q.entity_id not in ($subselect)");
 
         if ($product_str = implode(",", $this->getSellersProducts())) {

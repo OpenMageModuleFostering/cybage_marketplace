@@ -229,7 +229,8 @@ class Cybage_Marketplace_Model_Resource_Orderby_Collection extends Mage_Core_Mod
         if (!is_array($orderStatus)) {
             $orderStatus = array($orderStatus);
         }
-        $this->getSelect()->join(array('sfo' =>'sales_flat_order'), $this->_tablealias.'.order_id = sfo.entity_id', array('sfo.entity_id','sfo.status'));
+        $resource = Mage::getSingleton("core/resource");
+        $this->getSelect()->join(array('sfo' =>$resource->getTableName('sales_flat_order')), $this->_tablealias.'.order_id = sfo.entity_id', array('sfo.entity_id','sfo.status'));
         $this->getSelect()->where('sfo.status IN(?)', $orderStatus);
         return $this;
     }
