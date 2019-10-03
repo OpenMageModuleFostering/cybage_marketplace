@@ -1,7 +1,7 @@
 {
-    "name": "OpenMageModuleFostering\/Cybage_Marketplace",
+    "name": "openmage-module-fostering\/cybage_marketplace",
     "type": "magento-module",
-    "license": "Open-Software-License",
+    "license": "OSL-3.0",
     "homepage": "",
     "description": "You can convert your existing website to Marketplace using this Marketplace plug-in. This plug-in provides easy steps for sellers to register themselves, add products, manage orders, and communicate with buyers.",
     "authors": [
