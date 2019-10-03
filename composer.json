@@ -1,16 +1,19 @@
 {
-    "name": "OpenMageModuleFostering/Cybage_Marketplace",
+    "name": "OpenMageModuleFostering\/Cybage_Marketplace",
     "type": "magento-module",
     "license": "Open-Software-License",
     "homepage": "",
     "description": "You can convert your existing website to Marketplace using this Marketplace plug-in. This plug-in provides easy steps for sellers to register themselves, add products, manage orders, and communicate with buyers.",
     "authors": [
-    {
-        "name": "Cybage Software Pvt. Ltd.",
-        "email": "Support_Magento@cybage.com"
-    }
-],
+        {
+            "name": "Cybage Software Pvt. Ltd.",
+            "email": "Support_Magento@cybage.com"
+        }
+    ],
     "suggest": {
-        "magento-hackathon/magento-composer-installer": "*"
-    }
+        "magento-hackathon\/magento-composer-installer": "*"
+    },
+    "keywords": [
+        "openmage-module"
+    ]
 }
